@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, jsonify
 from collections import Counter
 import io
 
@@ -139,59 +139,74 @@ def vigenere_cipher(text, key, mode):
 @app.route("/", methods=["GET", "POST"])
 def home():
 
-    output = ""
-    brute_force_results = []
-    frequency_data = []
-    suggested_shift = None
-
     if request.method == "POST":
+        try:
+            action = request.form.get("action")
+            text = request.form.get("text") or ""
 
-        action = request.form.get("action")
+            # File Upload
+            uploaded_file = request.files.get("file")
+            if uploaded_file and uploaded_file.filename != "":
+                try:
+                    text = uploaded_file.read().decode("utf-8")
+                except Exception as e:
+                    return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-        text = request.form.get("text")
+            output = ""
+            brute_force_results = []
+            frequency_data = []
+            suggested_shift = None
 
-        # File Upload
-        uploaded_file = request.files.get("file")
+            # Caesar Cipher
+            if action == "process":
+                shift_str = request.form.get("shift")
+                if not shift_str:
+                    return jsonify({"error": "Shift key is required for Caesar cipher."}), 400
+                try:
+                    shift = int(shift_str)
+                except ValueError:
+                    return jsonify({"error": "Shift key must be a valid integer."}), 400
 
-        if uploaded_file and uploaded_file.filename != "":
+                mode = request.form.get("mode") or "encrypt"
+                output = caesar_cipher(text, shift, mode)
 
-            text = uploaded_file.read().decode("utf-8")
+            # Brute Force
+            elif action == "bruteforce":
+                if not text.strip():
+                    return jsonify({"error": "Please provide some text to perform brute force analysis."}), 400
+                brute_force_results = brute_force_caesar(text)
 
-        # Caesar Cipher
-        if action == "process":
+            # Frequency Analysis
+            elif action == "analyze":
+                if not text.strip():
+                    return jsonify({"error": "Please provide some text to perform frequency analysis."}), 400
+                frequency_data, suggested_shift = frequency_analysis(text)
 
-            shift = int(request.form.get("shift"))
+            # Vigenere Cipher
+            elif action == "vigenere":
+                key = request.form.get("vigenere_key")
+                if not key:
+                    return jsonify({"error": "Vigenère key is required."}), 400
+                if not key.isalpha():
+                    return jsonify({"error": "Vigenère key must contain only alphabetic characters."}), 400
 
-            mode = request.form.get("mode")
+                mode = request.form.get("mode") or "encrypt"
+                output = vigenere_cipher(text, key, mode)
+            else:
+                return jsonify({"error": "Invalid action specified."}), 400
 
-            output = caesar_cipher(text, shift, mode)
+            return jsonify({
+                "success": True,
+                "output": output,
+                "brute_force_results": brute_force_results,
+                "frequency_data": frequency_data,
+                "suggested_shift": suggested_shift
+            })
 
-        # Brute Force
-        elif action == "bruteforce":
+        except Exception as e:
+            return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
-            brute_force_results = brute_force_caesar(text)
-
-        # Frequency Analysis
-        elif action == "analyze":
-
-            frequency_data, suggested_shift = frequency_analysis(text)
-
-        # Vigenere Cipher
-        elif action == "vigenere":
-
-            key = request.form.get("vigenere_key")
-
-            mode = request.form.get("mode")
-
-            output = vigenere_cipher(text, key, mode)
-
-    return render_template(
-        "index.html",
-        output=output,
-        brute_force_results=brute_force_results,
-        frequency_data=frequency_data,
-        suggested_shift=suggested_shift
-    )
+    return render_template("index.html")
 
 
 # ---------------------------------------------------
@@ -218,4 +233,4 @@ def download():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
