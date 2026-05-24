@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+
 <body>
 
     <!-- Background Glow -->
@@ -32,24 +34,51 @@
     <!-- Hero Section -->
     <section class="hero">
 
+        <!-- Left Side -->
         <div class="hero-left">
+
             <h1>
                 Advanced <span>Caesar Cipher</span><br>
-                Cracking Toolkit
+                Encryption Toolkit
             </h1>
 
             <p>
-                Analyze, decrypt, brute-force, and break encrypted messages
-                using cyber-security inspired tools and frequency analysis.
+                Encrypt and decrypt secret messages using powerful
+                cyber-security inspired cryptography tools.
             </p>
 
-            <div class="hero-buttons">
-                <button class="primary-btn">Launch Toolkit</button>
-                <button class="secondary-btn">Learn More</button>
-            </div>
+            <!-- Form -->
+            <form method="POST" class="cipher-form">
+
+                <textarea name="text" placeholder="Enter your secret message..." required></textarea>
+
+                <div class="form-row">
+
+                    <input type="number" name="shift" placeholder="Shift Key" required>
+
+                    <select name="mode">
+
+                        <option value="encrypt">
+                            Encrypt
+                        </option>
+
+                        <option value="decrypt">
+                            Decrypt
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    Process Cipher
+                </button>
+
+            </form>
+
         </div>
 
-        <!-- Glass Card -->
+        <!-- Right Side -->
         <div class="glass-card">
 
             <div class="terminal-header">
@@ -58,11 +87,24 @@
                 <span class="dot green"></span>
             </div>
 
-            <div class="terminal-content">
-                <p>> Initializing Cipher Engine...</p>
-                <p>> Loading Encryption Modules...</p>
-                <p>> Frequency Analysis Ready...</p>
-                <p class="success">> System Active</p>
+            <div class="result-box">
+
+                <h2>Output</h2>
+
+                {% if output %}
+
+                <div class="output-text">
+                    {{ output }}
+                </div>
+
+                {% else %}
+
+                <div class="placeholder">
+                    Your encrypted/decrypted text will appear here...
+                </div>
+
+                {% endif %}
+
             </div>
 
         </div>
@@ -93,4 +135,5 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
+
 </html>
