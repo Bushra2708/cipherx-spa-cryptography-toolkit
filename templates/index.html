@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Cracker</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Background Glow -->
+    <div class="bg-glow glow1"></div>
+    <div class="bg-glow glow2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">CipherX</div>
+
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Encrypt</a></li>
+            <li><a href="#">Decrypt</a></li>
+            <li><a href="#">Analyzer</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+
+        <div class="hero-left">
+            <h1>
+                Advanced <span>Caesar Cipher</span><br>
+                Cracking Toolkit
+            </h1>
+
+            <p>
+                Analyze, decrypt, brute-force, and break encrypted messages
+                using cyber-security inspired tools and frequency analysis.
+            </p>
+
+            <div class="hero-buttons">
+                <button class="primary-btn">Launch Toolkit</button>
+                <button class="secondary-btn">Learn More</button>
+            </div>
+        </div>
+
+        <!-- Glass Card -->
+        <div class="glass-card">
+
+            <div class="terminal-header">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+            </div>
+
+            <div class="terminal-content">
+                <p>> Initializing Cipher Engine...</p>
+                <p>> Loading Encryption Modules...</p>
+                <p>> Frequency Analysis Ready...</p>
+                <p class="success">> System Active</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+
+        <div class="feature-card">
+            <h2>Brute Force</h2>
+            <p>Try all Caesar cipher combinations instantly.</p>
+        </div>
+
+        <div class="feature-card">
+            <h2>Frequency Analysis</h2>
+            <p>Detect hidden patterns in encrypted text.</p>
+        </div>
+
+        <div class="feature-card">
+            <h2>Vigenère Support</h2>
+            <p>Encrypt and decrypt advanced classical ciphers.</p>
+        </div>
+
+    </section>
+
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
