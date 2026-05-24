@@ -4,16 +4,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cipher Cracker</title>
+    <title>CipherX | Advanced Cryptography Toolkit</title>
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
+    <!-- Loading Screen -->
+    <div class="loader" id="loader">
+
+        <div class="loader-circle"></div>
+
+        <h2>Initializing Cipher Engine...</h2>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        Copied Successfully
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles">
+
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </div>
 
     <!-- Background Glow -->
     <div class="bg-glow glow1"></div>
@@ -21,40 +48,72 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="logo">CipherX</div>
+
+        <div class="logo">
+            CipherX
+        </div>
 
         <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Encrypt</a></li>
-            <li><a href="#">Decrypt</a></li>
-            <li><a href="#">Analyzer</a></li>
+
+            <li>
+                <a href="#">Home</a>
+            </li>
+
+            <li>
+                <a href="#">Encrypt</a>
+            </li>
+
+            <li>
+                <a href="#">Decrypt</a>
+            </li>
+
+            <li>
+                <a href="#">Analyzer</a>
+            </li>
+
         </ul>
+
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
 
-        <!-- Left Side -->
+        <!-- Left Panel -->
         <div class="hero-left">
 
             <h1>
-                Advanced <span>Caesar Cipher</span><br>
-                Encryption Toolkit
+                Advanced <span>Cryptography</span><br>
+                Analysis Toolkit
             </h1>
 
             <p>
-                Encrypt and decrypt secret messages using powerful
-                cyber-security inspired cryptography tools.
+                Encrypt, decrypt, brute-force, and analyze encrypted
+                messages using premium cyber-security inspired tools.
             </p>
 
-            <!-- Form -->
-            <form method="POST" class="cipher-form">
+            <!-- Main Form -->
+            <form method="POST" enctype="multipart/form-data" class="cipher-form">
 
-                <textarea name="text" placeholder="Enter your secret message..." required></textarea>
+                <!-- Text Area -->
+                <textarea name="text" placeholder="Enter encrypted text or upload a TXT file..."></textarea>
 
+                <!-- File Upload -->
+                <div class="upload-section">
+
+                    <label class="upload-label">
+                        Upload TXT File
+                    </label>
+
+                    <input type="file" name="file" accept=".txt" class="file-input">
+
+                </div>
+
+                <!-- Form Inputs -->
                 <div class="form-row">
 
-                    <input type="number" name="shift" placeholder="Shift Key" required>
+                    <input type="number" name="shift" placeholder="Caesar Shift Key">
+
+                    <input type="text" name="vigenere_key" placeholder="Vigenère Keyword">
 
                     <select name="mode">
 
@@ -70,37 +129,104 @@
 
                 </div>
 
-                <button type="submit" class="primary-btn">
-                    Process Cipher
-                </button>
+                <!-- Action Buttons -->
+                <div class="button-group">
+
+                    <button type="submit" name="action" value="process" class="primary-btn">
+                        Caesar Cipher
+                    </button>
+
+                    <button type="submit" name="action" value="vigenere" class="vigenere-btn">
+                        Vigenère Cipher
+                    </button>
+
+                    <button type="submit" name="action" value="bruteforce" class="secondary-btn">
+                        Brute Force
+                    </button>
+
+                    <button type="submit" name="action" value="analyze" class="analyze-btn">
+                        Frequency Analysis
+                    </button>
+
+                </div>
 
             </form>
 
         </div>
 
-        <!-- Right Side -->
+        <!-- Right Panel -->
         <div class="glass-card">
 
             <div class="terminal-header">
+
                 <span class="dot red"></span>
                 <span class="dot yellow"></span>
                 <span class="dot green"></span>
+
             </div>
 
             <div class="result-box">
 
-                <h2>Output</h2>
+                <h2>Output Console</h2>
 
                 {% if output %}
 
-                <div class="output-text">
-                    {{ output }}
+                <div class="output-wrapper">
+
+                    <div class="output-text" id="outputText">
+                        {{ output }}
+                    </div>
+
+                    <button type="button" class="copy-btn" onclick="copyOutput()">
+                        Copy Output
+                    </button>
+
+                </div>
+
+                <!-- Download Result -->
+                <form action="/download" method="POST">
+
+                    <input type="hidden" name="output_text" value="{{ output }}">
+
+                    <button type="submit" class="download-btn">
+                        Download Result
+                    </button>
+
+                </form>
+
+                {% elif brute_force_results %}
+
+                <div class="placeholder">
+
+                    Brute force analysis completed successfully.
+
+                    <br><br>
+
+                    Scroll below to explore all possible
+                    Caesar cipher shift combinations.
+
+                </div>
+
+                {% elif frequency_data %}
+
+                <div class="placeholder">
+
+                    Frequency analysis completed successfully.
+
+                    <br><br>
+
+                    Scroll below to view cryptographic
+                    statistics and suggested shift prediction.
+
                 </div>
 
                 {% else %}
 
                 <div class="placeholder">
-                    Your encrypted/decrypted text will appear here...
+
+                    Your encrypted/decrypted results
+                    will appear here...
+
                 </div>
 
                 {% endif %}
@@ -111,27 +237,159 @@
 
     </section>
 
-    <!-- Features -->
+    <!-- Brute Force Results -->
+    {% if brute_force_results %}
+
     <section class="features">
 
-        <div class="feature-card">
-            <h2>Brute Force</h2>
-            <p>Try all Caesar cipher combinations instantly.</p>
-        </div>
+        <div class="bruteforce-container">
 
-        <div class="feature-card">
-            <h2>Frequency Analysis</h2>
-            <p>Detect hidden patterns in encrypted text.</p>
-        </div>
+            <h2>Brute Force Results</h2>
 
-        <div class="feature-card">
-            <h2>Vigenère Support</h2>
-            <p>Encrypt and decrypt advanced classical ciphers.</p>
+            <div class="bruteforce-grid">
+
+                {% for result in brute_force_results %}
+
+                <div class="brute-card">
+
+                    <div class="shift-badge">
+                        Shift {{ result.shift }}
+                    </div>
+
+                    <p>
+                        {{ result.text }}
+                    </p>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
         </div>
 
     </section>
 
-    <!-- JS -->
+    {% endif %}
+
+    <!-- Frequency Analysis -->
+    {% if frequency_data %}
+
+    <section class="analysis-section">
+
+        <!-- Header -->
+        <div class="analysis-header">
+
+            <h2>
+                Frequency Analysis Report
+            </h2>
+
+            <p>
+                Advanced cryptographic frequency distribution
+                analysis for encrypted message detection
+                and Caesar cipher prediction.
+            </p>
+
+        </div>
+
+        <!-- Analysis Cards -->
+        <div class="analysis-grid">
+
+            {% for item in frequency_data %}
+
+            <div class="analysis-card">
+
+                <div class="analysis-top">
+
+                    <div class="letter">
+                        {{ item.letter }}
+                    </div>
+
+                    <div class="percentage">
+                        {{ item.percentage }}%
+                    </div>
+
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-container">
+
+                    <div class="progress-bar" style="width: {{ item.percentage }}%;"></div>
+
+                </div>
+
+                <div class="count">
+                    Total Occurrences: {{ item.count }}
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <!-- Suggested Shift -->
+        <div class="suggested-shift">
+
+            <div>
+                Suggested Caesar Shift
+            </div>
+
+            <span>
+                {{ suggested_shift }}
+            </span>
+
+        </div>
+
+    </section>
+
+    {% endif %}
+
+    <!-- Feature Cards -->
+    <section class="features">
+
+        <div class="feature-card">
+
+            <h2>
+                Brute Force Cracking
+            </h2>
+
+            <p>
+                Automatically test all Caesar cipher
+                combinations and detect possible plaintext.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <h2>
+                Frequency Analysis
+            </h2>
+
+            <p>
+                Analyze encrypted text patterns using
+                cryptographic statistical techniques.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <h2>
+                Vigenère Encryption
+            </h2>
+
+            <p>
+                Encrypt and decrypt advanced multi-key
+                classical cryptography algorithms.
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- JavaScript -->
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
